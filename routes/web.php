@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,6 +22,11 @@ Route::get('/', function () {
 Route::get('/chat', [ChatController::class, 'index'])->name('chat')->middleware(['auth']);
 Route::post('/chat/search', [ChatController::class, 'search'])->name('chat.search')->middleware(['auth']);
 Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send')->middleware(['auth']);
+Route::get('/chat/fetch', [ChatController::class, 'get'])->name('chat.get');//middleware(['auth']);
+
+
+Route::get('/testchat', [TestController::class, 'index'])->name('testchat')->middleware(['auth']);
+Route::get('/testchat/all', [ChatController::class, 'getContacts'])->middleware(['auth']);
 
 
 Route::get('/dashboard', function () {

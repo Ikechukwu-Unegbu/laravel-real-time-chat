@@ -75,29 +75,38 @@
     <script src="{{asset('js/chat/search.js')}}"></script>
     <script src="{{asset('js/chat/clickuser.js')}}"></script>
     <script>
+      let currenUser = `{{$user->id}}`;
+      console.log(currenUser);
       //listen for click on send button
+      // console.log(typeof +currenUser)
       let chatBtn = document.getElementById('chatbtn');
       let chatbox = document.getElementById('chatinput');
       let image = document.getElementById('file');
 
-    
-     
+      document.addEventListener('DOMContentLoaded', function(){
+        fetch('/chat/fetch/'+2)
+          .then(response =>{return response.text()})
+          .then(data=>{console.log(data)});
+      })
+
       chatBtn.addEventListener('click', function(e){
-        payload ={
-          chat:chatbox.innerText,
-          file:image.files[0],
-          to:chatbox.getAttribute('data-key')
-        }
+        let payload= new FormData();
+        payload.append('message', chatbox.innerText);
+        payload.append('file', image.files[0])
+        payload.append('to', chatbox.getAttribute('data-key'))
+
         let options ={
             method:'POST',
             headers:{
               'Content-Type':'application/json',
               // 'X-CSRF-Token': document.querySelector('input[name="_csrf"]').value
             },
-            body:JSON.stringify(payload)
+            body:payload
         }
-        fetch('/chat/send', options)
-          .then(response =>{return response.json()})
+        fetch('/chat/send',{
+          method:'POST', 
+          body:payload
+        }).then(response =>{return response.json()})
           .then(data =>{console.log(data)})
         
       })

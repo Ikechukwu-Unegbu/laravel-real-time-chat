@@ -14,7 +14,7 @@ class ChatService{
     $attachment = null;
     $attachment_title = null;
 
-    $message = Chat::where('id', $chatId)->first();
+    $message = Chat::where('uid', $chatId)->first();
 
     //check if message have attachment
     if(isset($message->attachment)){
@@ -25,7 +25,7 @@ class ChatService{
       $ext = pathinfo($attachment, PATHINFO_EXTENSION);
     }
     return [
-      'id'=>$message->id,
+      'id'=>$message->uid,
       'from_id'=>$message->from_id,
       'to_id'=>$message->to_id,
       'chat'=>$message->chat, 
@@ -41,7 +41,7 @@ class ChatService{
 
   public function newMessage($data){
     $chat = new Chat();
-    $chat->id = $data['id'];
+    $chat->uid = $data['uid'];
     $chat->from_id = $data['from_id']; 
     $chat->to_id = $data['to_id'];
     $chat->chat = $data['chat'];

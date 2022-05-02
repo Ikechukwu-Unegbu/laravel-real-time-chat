@@ -9,6 +9,7 @@ use App\Services\Chat\ChatService;
 use Illuminate\Http\Client\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response as FacadesResponse;
 use Illuminate\Support\Str;
 
@@ -28,7 +29,7 @@ class ChatController extends Controller
 
     public function send(Request $request){
         //useful variables
-        return response()->json($request->all());die;
+        //return response()->json($request->all());die;
         $error =  (object)[
             'status'=>0,
             'message'=>null
@@ -37,13 +38,15 @@ class ChatController extends Controller
         $attachment_title = null;
         //check if there is a file or image and upload it to folder
         if($request->hasFile('file')){
+            //var_dump('has file');die;
             $allowed_images = $this->chatService->allowedImages();
             $allowed_files = $this->chatService->allowedFiles();
             $allowed = array_merge($allowed_images, $allowed_files);
             $file = $request->file('file');
-            if($file->getSize() <$this->chatService->allowedFileSize()){
+            if($file->getSize() >$this->chatService->allowedFileSize()){
                 if(in_array($file->getClientOriginalExtension(), $allowed)){
-                    //upload 
+                    //upload
+                    //var_dump('image met all req');die; 
                     $attachment_title = $file->getClientOriginalName();
                     $attachment = Str::uuid(). ".".$file->getClientOriginalName();
                     $file->storeAs("public/chats", $attachment);
@@ -58,14 +61,15 @@ class ChatController extends Controller
             }
             
         }
+        $chatId = mt_rand(9, 999999999) + time();
         //insert full message to database along with attachment folder path
         if($error->status){
             event(new NewMessage($error));
         }else{
             $chatService = new ChatService();
-            $chatId = mt_rand(9, 999999999) + time();
+            // $chatId = mt_rand(9, 999999999) + time();
             $chatService->newMessage([
-            'id'=>$chatId,
+            'uid'=>$chatId,
             'from_id' => Auth::user()->id,
             'to_id' => $request->to,
             'chat' => htmlentities(trim($request->message), ENT_QUOTES, 'UTF-8'),
@@ -82,26 +86,27 @@ class ChatController extends Controller
     }
 
     //gets user messages from database
-    public function get(Request $request){
-        $query = $this->chatService->getMessagesQuery($request->id)->latest();
-        $chats = $query->paginate($request->per_age??$this->perPage);
-        $totalChats = $chats->total();
-        $lastPage = $chats->lastPage();
+    public function getChatWithUser($userid){
+        $query = $this->chatService->getMessagesQuery($userid)->latest();
+        $chats = $query->paginate(30);
+        $totalChats = $chats->count();
+        return response()->json($chats);
+        // $lastPage = $chats->lastPage();
         $response = [
             'total'=>$totalChats,
-            'last_page'=>$lastPage,
+            // 'last_page'=>$lastPage,
             'last_message_id'=>collect($chats->items())->last()->id??null,
             'messages'=>'',
         ];
         //if there is no messages yet
         if($totalChats<1){
             $response['messages'] ='<p class="message-hint center-el"><span>Say \'hi\' and start messaging</span></p>';
-            return FacadesResponse::json($response);
+            return response()->json($response);
         }
 
        $chatsReverse = $chats->reverse();
        $response['messages'] = $chatsReverse;
-       return FacadesResponse::json($response);
+       return response()->json($response);
         
     }
 
@@ -118,5 +123,23 @@ class ChatController extends Controller
              'records'=>$records,
              'total'=>$records->count()
         ]);
+    }
+
+    public function getContacts(){
+        $users = Chat::join('users',  function ($join) {
+            $join->on('chats.from_id', '=', 'users.id')
+                ->orOn('chats.to_id', '=', 'users.id');
+        })
+        ->where(function ($q) {
+            $q->where('chats.from_id', Auth::user()->id)
+            ->orWhere('chats.to_id', Auth::user()->id);
+        })
+        ->where('users.id','!=',Auth::user()->id)
+        ->select('users.*',DB::raw('MAX(chats.created_at) max_created_at'))
+        ->orderBy('max_created_at', 'desc')
+        ->groupBy('users.id')
+        ->paginate(30);
+
+        return response()->json($users);
     }
 }
