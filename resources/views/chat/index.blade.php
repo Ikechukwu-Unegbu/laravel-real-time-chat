@@ -84,8 +84,8 @@
       let image = document.getElementById('file');
 
       document.addEventListener('DOMContentLoaded', function(){
-        fetch('/chat/fetch/'+2)
-          .then(response =>{return response.text()})
+        fetch('/chat/fetch/all')
+          .then(response =>{return response.json()})
           .then(data=>{console.log(data)});
       })
 

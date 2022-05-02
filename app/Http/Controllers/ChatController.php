@@ -140,6 +140,13 @@ class ChatController extends Controller
         ->groupBy('users.id')
         ->paginate(30);
 
-        return response()->json($users);
+        $usersList = $users->items();
+
+
+        return response()->json([
+            'contacts' => $usersList,
+            'total' => $users->total() ?? 0,
+            'last_page' => $users->lastPage() ?? 1,
+        ], 200);
     }
 }

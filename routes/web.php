@@ -22,7 +22,7 @@ Route::get('/', function () {
 Route::get('/chat', [ChatController::class, 'index'])->name('chat')->middleware(['auth']);
 Route::post('/chat/search', [ChatController::class, 'search'])->name('chat.search')->middleware(['auth']);
 Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send')->middleware(['auth']);
-Route::get('/chat/fetch', [ChatController::class, 'get'])->name('chat.get');//middleware(['auth']);
+Route::get('/chat/fetch/all', [ChatController::class, 'getContacts'])->name('chat.get');//middleware(['auth']);
 
 
 Route::get('/testchat', [TestController::class, 'index'])->name('testchat')->middleware(['auth']);
