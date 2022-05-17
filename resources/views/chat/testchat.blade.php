@@ -13,11 +13,12 @@
   <body>
     <!-- <h1>Hello, world!</h1> -->
     <form action="/chat/send" method="post" enctype="multipart/form-data">
+      <input type="number" name="to" style="display: hidden;">
       <div class="mb-3">
         <label for="formFile" class="form-label">Default file input example</label>
         <input class="form-control" type="file" name="file" id="file">
       </div>
-        <input type="hidden" name="to" value="1">
+  
       <div class="form-floating">
         <textarea class="form-control" name="message" placeholder="Leave a comment here" id="floatingTextarea"></textarea>
         <label for="floatingTextarea">Comments</label>

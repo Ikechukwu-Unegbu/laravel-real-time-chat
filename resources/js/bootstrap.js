@@ -40,4 +40,10 @@ window.Echo = new Echo({
     wsPort: 6001,
     forceTLS: false,
     disableStats: true,
+    auth: {
+        headers: {
+          authorization: 'Bearer ' + window.axios.defaults.headers.common['X-Requested-With'],
+          'X-CSRF-Token': "CSRF_TOKEN"
+        }
+      }
 });

@@ -8,6 +8,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" href="{{asset('css/chat/index.css')}}">
+    
+  <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Artisan Chat!</title>
   </head>
   <body>
@@ -72,11 +74,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js" integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
     -->
+    <script src="{{asset('js/app.js')}}"></script>
     <script src="{{asset('js/chat/search.js')}}"></script>
     <script src="{{asset('js/chat/clickuser.js')}}"></script>
     <script>
       let currenUser = `{{$user->id}}`;
-      console.log(currenUser);
+       console.log(currenUser);
       //listen for click on send button
       // console.log(typeof +currenUser)
       let chatBtn = document.getElementById('chatbtn');
@@ -86,7 +89,9 @@
       document.addEventListener('DOMContentLoaded', function(){
         fetch('/chat/fetch/all')
           .then(response =>{return response.json()})
-          .then(data=>{console.log(data)});
+          .then(data=>{
+            // console.log(data)
+          });
       })
 
       chatBtn.addEventListener('click', function(e){
@@ -107,9 +112,29 @@
           method:'POST', 
           body:payload
         }).then(response =>{return response.json()})
-          .then(data =>{console.log(data)})
+          .then(data =>{
+            //console.log('sent')
+          })
         
       })
+
+ //     let chatinput = document.getElementById('chatinput');
+      //let chatdisplay = document.getElementById('chatdisplay-ul')
+      //let peer = document.getElementById('peer')
+      let chatwith =0;
+      function userClicked(data){
+        peer.innerText = '';
+        peer.innerText = data.name;
+        console.log(data)
+        chatinput.setAttribute('data-key', data.id)
+      }
+
+
+      Echo.private(`chat.4`)
+          .listen('NewMessage', (e)=>{
+        console.log(e)
+      })
     </script>
+    
   </body>
 </html>

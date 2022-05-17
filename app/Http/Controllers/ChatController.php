@@ -29,6 +29,7 @@ class ChatController extends Controller
 
     public function send(Request $request){
         //useful variables
+        // var_dump($request->to);die;
         //return response()->json($request->all());die;
         $error =  (object)[
             'status'=>0,
@@ -64,7 +65,7 @@ class ChatController extends Controller
         $chatId = mt_rand(9, 999999999) + time();
         //insert full message to database along with attachment folder path
         if($error->status){
-            event(new NewMessage($error));
+            // event(new NewMessage($error));
         }else{
             $chatService = new ChatService();
             // $chatId = mt_rand(9, 999999999) + time();
@@ -81,7 +82,7 @@ class ChatController extends Controller
             //fetch message to send 
             $chatData = $chatService->getChat($chatId);
             
-            event(new NewMessage($chatData));
+            event(new NewMessage([$request->to, Auth::user()->id], $chatData));
         }
     }
 

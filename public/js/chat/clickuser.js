@@ -1,21 +1,6 @@
 let chatinput = document.getElementById('chatinput');
 let chatdisplay = document.getElementById('chatdisplay-ul')
 let peer = document.getElementById('peer')
-let chattingWith;
-
-
-function getOurChat(id){
-
-}
-
-function getUser(){
-
-}
-
-function redirectToChatPage(id){
-  window.location.href="/chat/"+id;
-}
-
 
 function userClicked(data){
   peer.innerText = '';

@@ -19,7 +19,7 @@ searchBtn.addEventListener('click', function(e){
       fetch('/chat/search', options)
     .then(response => response.json())
     .then(data => {
-      console.log(data.records)
+      // console.log(data.records)
       if(data.total==0){
         //send nothing found to dom
         document.getElementById('nothing-found').style.display = 'block';
@@ -46,5 +46,5 @@ searchBtn.addEventListener('click', function(e){
 })
 
 searchInpt.addEventListener('input', function(event){
-  console.log(event.target.value)
+  // console.log(event.target.value)
 })
